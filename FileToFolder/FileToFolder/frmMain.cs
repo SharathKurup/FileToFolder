@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -19,6 +21,7 @@ namespace FileToFolder
         string sSrcPath, sDestPath;
         string sYearDirPath, sMonthDirPath, sDateDirPath;
         string sTitle = "Move File To Folder";
+        string[] arrNamePattern = { "YYYYMMDD", "YYYY-MM-DD" };
 
         private void FrmMain_Load(object sender, EventArgs e)
         {
@@ -27,7 +30,6 @@ namespace FileToFolder
             this.CancelButton = btnCancel;
             PopulateYear();
             prgMoveStatus.Value = 0;
-            string[] arrNamePattern = { "YYYYMMDD", "YYYY-MM-DD" };
 
             //test
             sSrcPath = $"D:\\2_Project\\FileToFolder\\FileToFolder\\FileToFolder\\img";
@@ -55,6 +57,8 @@ namespace FileToFolder
             //Create Directory For Year
             sYearDirPath = $"{sDestPath}/{iSelectedYear}";
             CreateDirectory(sYearDirPath);
+
+            List<string> arrayList = new List<string>();
             for (int iMonth = 1; iMonth <= 12; iMonth++)
             {
                 //Create Directory for Month
@@ -65,28 +69,28 @@ namespace FileToFolder
                 {
                     string sDate = (iDate.ToString().Length == 1) ? "0" + iDate.ToString() : iDate.ToString();
 
-                    string sName = "*" + iSelectedYear.ToString() + sMonth + sDate + "*";
-                    DirectoryInfo di = new DirectoryInfo(sSrcPath);
-                    if (di.Exists)
+                    foreach (var item in arrNamePattern)
                     {
-                        FileInfo[] files = di.GetFiles(sName);
-                        int iFilesCount = files.Length;
-                        int iCurrFileNo = 0;
-                        foreach (FileInfo fi in files)
-                        {
-                            if (fi.Exists)
-                            {
-                                this.Text = $"Moving ... {sMonthName[int.Parse(sMonth) - 1]} {iSelectedYear} ... {sDate}{sMonth}{iSelectedYear} ... {fi.Name}";
-                                this.Update();
-                                iCurrFileNo++;
-                                Decimal iPer = decimal.Floor((iCurrFileNo * 100) / iFilesCount);
-                                MoveFile(sMonth, sDate, fi, iPer);
-                            }
-                        }
-                        prgMoveStatus.Value = 0;
+                        var sNameSearch = "*" + item.Replace("YYYY", iSelectedYear.ToString()).Replace("MM", sMonth).Replace("DD", sDate) + "*";
+                        string[] arrFileName = Directory.GetFiles(sSrcPath, sNameSearch);
+                        arrayList.AddRange(arrFileName);
                     }
+                    int iFilesCount = arrayList.Count;
+                    int iCurrFileNo = 0;
+                    foreach (string _name in arrayList)
+                    {
+                        FileInfo fi=new FileInfo(_name);
+                        if (fi.Exists)
+                        {
+                            this.Text = $"Moving ... {sMonthName[int.Parse(sMonth) - 1]} {iSelectedYear} ... {sDate}{sMonth}{iSelectedYear} ... {fi.Name}";
+                            this.Update();
+                            iCurrFileNo++;
+                            Decimal iPer = decimal.Floor((iCurrFileNo * 100) / iFilesCount);
+                            MoveFile(sMonth, sDate, fi, iPer);
+                        }
+                    }
+                    prgMoveStatus.Value = 0;
                 }
-                //Check if directory is empty then delete.
                 if (!(Directory.GetDirectories(sMonthDirPath).Length > 0)) Directory.Delete(sMonthDirPath, true);
             }
             MessageBox.Show("Transfer Complete.", Application.ProductName);
@@ -104,8 +108,8 @@ namespace FileToFolder
             sDateDirPath = $"{sMonthDirPath}/{sDate}{sMonth}{iSelectedYear}";
             CreateDirectory(sDateDirPath);
             //Directory.CreateDirectory(datePath);
-            //File.Move(fi.FullName, datePath + $"/{fi.Name}");
-            File.Copy(fi.FullName, sDateDirPath + $"/{fi.Name}", true);//For testing
+            File.Move(fi.FullName, sDateDirPath + $"/{fi.Name}");
+            //File.Copy(fi.FullName, sDateDirPath + $"/{fi.Name}", true);//For testing
             //prgMoveStatus.Increment(int.Parse(iPer.ToString()));
             prgMoveStatus.Value = int.Parse(iPer.ToString());
             prgMoveStatus.CreateGraphics().DrawString(iPer.ToString() + "%",

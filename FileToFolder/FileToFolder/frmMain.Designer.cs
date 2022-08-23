@@ -1,7 +1,7 @@
 ﻿
 namespace FileToFolder
 {
-    partial class frmMain
+    partial class FrmMain
     {
         /// <summary>
         /// Required designer variable.
@@ -153,7 +153,7 @@ namespace FileToFolder
             this.prgMoveStatus.Size = new System.Drawing.Size(489, 46);
             this.prgMoveStatus.TabIndex = 11;
             // 
-            // frmMain
+            // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -162,7 +162,7 @@ namespace FileToFolder
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
-            this.Name = "frmMain";
+            this.Name = "FrmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Move File To Folder";
             this.Load += new System.EventHandler(this.FrmMain_Load);

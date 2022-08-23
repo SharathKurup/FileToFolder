@@ -1,0 +1,2 @@
+﻿Different approach to read app.config settings.
+https://www.c-sharpcorner.com/article/four-ways-to-read-configuration-setting-in-c-sharp/
